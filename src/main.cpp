@@ -15,6 +15,7 @@
 
 
 #define FRAMERATE 144
+#define GRAVITY 9.98
 
 IFileSystem* createFileSystem() {
 #ifdef _WIN32
@@ -73,6 +74,8 @@ int main()
     float x1 = windowSize.x - centerX;
     float y1 = windowSize.y - centerY;
     float maxDistance = std::sqrt(x1 * x1 + y1 * y1);
+    float yPosition = centerY;
+    float vY = 0;
 
     // Create a sound instance and set its buffer
     sf::Sound sound;
@@ -143,6 +146,22 @@ int main()
         window.popGLStates();
 
         window.display();
+
+        // apply gravity
+        vY += 0.03 * GRAVITY;
+
+        // Bounce
+        if (centerY > windowSize.y && vY > 0.01) {
+            vY = -vY * 0.940; // Friction energy loss or whatever
+            centerY += vY;
+            sound.play();
+        }
+
+        if (vY <= 0.01 && centerY > windowSize.y){
+            vY = 0;
+        }
+
+        centerY += vY;
     }
 
     sound.stop();
