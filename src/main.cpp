@@ -3,8 +3,26 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <random>
+#include <limits.h>
+#include <unistd.h>
+
+#ifdef _WIN32
+#include "WindowsFileSystem.h"
+#else
+#include "include/LinuxFileSystem.h"
+#include <GL/gl.h>
+#endif
+
 
 #define FRAMERATE 144
+
+IFileSystem* createFileSystem() {
+#ifdef _WIN32
+    return new WindowsFileSystem();
+#else
+    return new LinuxFileSystem();
+#endif
+}
 
 // CIMER GPT
 // Function to generate a random value between 0 and 1
@@ -27,14 +45,14 @@ int main()
     auto window = sf::RenderWindow{{1920u, 1080u}, "CMake SFML Project", sf::Style::Default};
     window.setFramerateLimit(FRAMERATE);
 
-    // Permission de changer ça lol, je faisais des tests c'est tout
+    IFileSystem* fs = createFileSystem();
+    std::string currentDir = fs->getCurrentDirectory();
     
+
     // Load the sound file
     sf::SoundBuffer buffer;
-    char bufferD[MAX_PATH];
-    GetCurrentDirectoryA(MAX_PATH, bufferD);
-    std::cout << "Current working directory: " << bufferD << std::endl;
-    if (!buffer.loadFromFile("../../assets/sound-asset.wav")) {
+    std::cout << "Current working directory: " << currentDir << std::endl;
+    if (!buffer.loadFromFile("../assets/sound-asset.wav")) {
         std::cerr << "Failed to load sound file!" << std::endl;
         return 1;
     }
