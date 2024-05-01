@@ -11,21 +11,25 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(Zblork src/main.cpp)
-target_link_libraries(Zblork PRIVATE sfml-system sfml-audio sfml-graphics)
+
+include_directories(include/Constants)
+include_directories(include/Doritos)
+include_directories(include/GameActor)
+include_directories(include/utils)
 
 if (WIN32)
     message("Windows")
-    set(WINDOWSFILESYSTEM_SRC src/LinuxFileSystem.cpp)
-    target_sources(${PROJECT_NAME} PUBLIC ${WINDOWSFILESYSTEM_SRC})
+    set(SRC_FILESYSTEM src/WindowsFileSystem.cpp)
     include_directories(include/WindowsFileSystem)
-    target_link_libraries(Zblork PRIVATE sfml-system sfml-audio sfml-graphics)
 else ()
     message("Linux")
-    set(LINUXFILESYSTEM_SRC src/LinuxFileSystem.cpp)
-    target_sources(${PROJECT_NAME} PUBLIC ${LINUXFILESYSTEM_SRC})
+    set(SRC_FILESYSTEM src/LinuxFileSystem.cpp)
     include_directories(include/LinuxFileSystem)
-    target_link_libraries(Zblork PRIVATE sfml-system sfml-audio sfml-graphics OpenGL)
 endif ()
+
+set(SRC_FILES src/Doritos.cpp src/GameActor.cpp src/utils.cpp)
+target_sources(${PROJECT_NAME} PUBLIC ${SRC_FILESYSTEM} ${SRC_FILES})  
+target_link_libraries(Zblork PRIVATE sfml-system sfml-audio sfml-graphics OpenGL)
 
 target_compile_features(Zblork PRIVATE cxx_std_17)
 
